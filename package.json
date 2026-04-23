@@ -2,19 +2,10 @@
   "publisher": "hajimi",
   "name": "together-code",
   "displayName": "协同编码",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "private": true,
   "packageManager": "pnpm@10.28.0",
   "description": "支持多人协同编码的远程插件",
-  "author": {
-    "name": "hajimi",
-    "url": "https://github.com/hajimi"
-  },
-  "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/hajimi/together-code.git"
-  },
   "categories": [
     "Other"
   ],
