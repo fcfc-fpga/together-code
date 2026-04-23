@@ -1,0 +1,89 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+jobs:
+  release:
+    permissions:
+      id-token: write
+      contents: write
+      packages: write
+
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: lts/*
+          registry-url: https://registry.npmjs.org/
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.21'
+
+      - name: Build Extension
+        run: |
+          pnpm install
+          pnpm build
+
+      - name: Build Go WS Server
+        working-directory: ./src/sync/ws/go
+        run: |
+          chmod +x build.sh
+          ./build.sh
+
+      - run: npm i -g npm@latest
+      - run: pnpm i
+
+      - name: Publish to VSCE
+        continue-on-error: true
+        run: pnpx @vscode/vsce publish --no-dependencies -p ${{secrets.VSCE_TOKEN}}
+
+      - name: Publish to OVSX
+        continue-on-error: true
+        run: pnpx ovsx publish --no-dependencies -p ${{secrets.OVSX_TOKEN}}
+
+      - name: Publish to NPM
+        continue-on-error: true
+        working-directory: ./src/sync/ws/
+        run: npm publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push Docker image
+        run: |
+          VERSION=${{ github.ref_name }}
+          docker build . --file Dockerfile \
+            --tag ghcr.io/kermanx/p2p-live-share-ws-server:latest \
+            --tag ghcr.io/kermanx/p2p-live-share-ws-server:${VERSION}
+          docker push ghcr.io/kermanx/p2p-live-share-ws-server:latest
+          docker push ghcr.io/kermanx/p2p-live-share-ws-server:${VERSION}
+        working-directory: ./src/sync/ws/go
+
+      - name: Pack VSIX
+        run: pnpx @vscode/vsce package --no-dependencies
+
+      - name: Create GitHub Release
+        uses: ncipollo/release-action@v1
+        with:
+          artifacts: ./src/sync/ws/go/ws-server, ./src/sync/ws/go/serverless.zip, ./*.vsix
+          token: ${{ secrets.GITHUB_TOKEN }}
+          tag: ${{ github.ref_name }}
+          name: Release ${{ github.ref_name }}

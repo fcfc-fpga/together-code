@@ -1,0 +1,39 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Run Host",
+      "type": "extensionHost",
+      "request": "launch",
+      "args": [
+        "--extensionDevelopmentPath=${workspaceFolder}",
+        "--folder-uri=${workspaceRoot}/test-workspace"
+      ],
+      "outFiles": [
+        "${workspaceFolder}/dist/**/*.js"
+      ]
+    },
+    {
+      "name": "Run Client",
+      "type": "extensionHost",
+      "request": "launch",
+      "args": [
+        "--extensionDevelopmentPath=${workspaceFolder}/../p2p-live-share-2",
+        "--folder-uri=p2p-live-share://ws.testtest.localhost:8080/"
+      ],
+      "outFiles": [
+        "${workspaceFolder}/dist/**/*.js"
+      ]
+    }
+  ],
+  "compounds": [
+    {
+      "name": "Run Both",
+      "configurations": [
+        "Run Host",
+        "Run Client"
+      ],
+      "stopAll": true
+    }
+  ]
+}

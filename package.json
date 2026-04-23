@@ -1,0 +1,605 @@
+{
+  "publisher": "hajimi",
+  "name": "together-code",
+  "displayName": "协同编码",
+  "version": "1.0.0",
+  "private": true,
+  "packageManager": "pnpm@10.28.0",
+  "description": "支持多人协同编码的远程插件",
+  "author": {
+    "name": "hajimi",
+    "url": "https://github.com/hajimi"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hajimi/together-code.git"
+  },
+  "categories": [
+    "Other"
+  ],
+  "main": "./dist/extension.cjs",
+  "icon": "assets/icon.png",
+  "browser": "./dist/browser.js",
+  "engines": {
+    "vscode": "^1.99.0"
+  },
+  "activationEvents": [
+    "onFileSystem:together-code"
+  ],
+  "contributes": {
+    "commands": [
+      {
+        "command": "together-code.host",
+        "title": "发起会话",
+        "category": "协同编码"
+      },
+      {
+        "command": "together-code.join",
+        "title": "加入会话",
+        "category": "协同编码"
+      },
+      {
+        "command": "together-code.joinNewWindow",
+        "title": "在新窗口中加入会话",
+        "category": "协同编码"
+      },
+      {
+        "command": "together-code.leave",
+        "title": "离开会话",
+        "icon": "$(sign-out)",
+        "category": "协同编码"
+      },
+      {
+        "command": "together-code.stop",
+        "title": "结束共享",
+        "icon": "$(stop-circle)",
+        "category": "协同编码"
+      },
+      {
+        "command": "together-code.jumpToParticipant",
+        "title": "跳转到成员位置",
+        "icon": "$(go-to-file)",
+        "category": "协同编码"
+      },
+      {
+        "command": "together-code.copyInviteLink",
+        "title": "复制邀请链接",
+        "icon": "$(add)",
+        "category": "协同编码"
+      },
+      {
+        "command": "together-code.createSharedTerminal",
+        "title": "创建共享终端",
+        "icon": "$(add)",
+        "category": "协同编码"
+      },
+      {
+        "command": "together-code.focusSharedTerminal",
+        "title": "切换到共享终端",
+        "category": "协同编码"
+      },
+      {
+        "command": "together-code.closeSharedTerminal",
+        "title": "关闭共享终端",
+        "icon": "$(close)",
+        "category": "协同编码"
+      },
+      {
+        "command": "together-code.shareServer",
+        "title": "共享服务",
+        "icon": "$(add)",
+        "category": "协同编码"
+      },
+      {
+        "command": "together-code.stopSharingServer",
+        "title": "停止共享服务",
+        "icon": "$(stop-circle)",
+        "category": "协同编码"
+      },
+      {
+        "command": "together-code.connectToSharedServer",
+        "title": "连接共享服务",
+        "icon": "$(plug)",
+        "category": "协同编码"
+      },
+      {
+        "command": "together-code.disconnectFromSharedServer",
+        "title": "断开共享服务",
+        "icon": "$(debug-disconnect)",
+        "category": "协同编码"
+      },
+      {
+        "command": "together-code.copySharedServerLocalURL",
+        "title": "复制共享服务本地地址",
+        "category": "协同编码"
+      },
+      {
+        "command": "together-code.executeHostCommand",
+        "title": "占位命令",
+        "category": "协同编码"
+      },
+      {
+        "command": "together-code.scm.openChange",
+        "title": "打开更改",
+        "category": "协同编码源代码管理",
+        "icon": {
+          "light": "images/light/open-change.svg",
+          "dark": "images/dark/open-change.svg"
+        }
+      },
+      {
+        "command": "together-code.scm.openFile",
+        "title": "打开文件",
+        "category": "协同编码源代码管理",
+        "icon": "$(go-to-file)"
+      },
+      {
+        "command": "together-code.scm.clean",
+        "title": "放弃更改",
+        "category": "协同编码源代码管理",
+        "icon": "$(discard)"
+      },
+      {
+        "command": "together-code.scm.cleanAll",
+        "title": "放弃所有更改",
+        "category": "协同编码源代码管理",
+        "icon": "$(discard)"
+      },
+      {
+        "command": "together-code.scm.revertChange",
+        "title": "还原更改",
+        "category": "协同编码源代码管理",
+        "icon": "$(discard)"
+      },
+      {
+        "command": "together-code.undo",
+        "title": "撤销",
+        "category": "协同编码"
+      },
+      {
+        "command": "together-code.redo",
+        "title": "重做",
+        "category": "协同编码"
+      }
+    ],
+    "keybindings": [
+      {
+        "key": "ctrl+z",
+        "mac": "cmd+z",
+        "command": "together-code.undo",
+        "when": "editorTextFocus"
+      },
+      {
+        "key": "ctrl+shift+z",
+        "mac": "cmd+shift+z",
+        "command": "together-code.redo",
+        "when": "editorTextFocus"
+      },
+      {
+        "key": "ctrl+y",
+        "command": "together-code.redo",
+        "when": "editorTextFocus"
+      }
+    ],
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "together-code-panel",
+          "title": "协同编码",
+          "icon": "./assets/panel-icon.svg"
+        }
+      ]
+    },
+    "views": {
+      "together-code-panel": [
+        {
+          "id": "together-code.participants",
+          "name": "参与者",
+          "type": "tree",
+          "when": "false"
+        },
+        {
+          "id": "together-code.terminals",
+          "name": "共享终端",
+          "type": "tree",
+          "when": "false"
+        },
+        {
+          "id": "together-code.tunnels",
+          "name": "共享服务",
+          "type": "tree",
+          "when": "false"
+        },
+        {
+          "id": "together-code.webview",
+          "name": "协同编码",
+          "type": "webview"
+        }
+      ]
+    },
+    "menus": {
+      "view/title": [
+        {
+          "command": "together-code.createSharedTerminal",
+          "when": "false",
+          "group": "navigation"
+        },
+        {
+          "command": "together-code.shareServer",
+          "when": "false",
+          "group": "navigation"
+        }
+      ],
+      "view/item/context": [
+        {
+          "command": "together-code.jumpToParticipant",
+          "when": "view == together-code.participants && viewItem == jumpable",
+          "group": "inline"
+        },
+        {
+          "command": "together-code.closeSharedTerminal",
+          "when": "false",
+          "group": "inline"
+        },
+        {
+          "command": "together-code.stopSharingServer",
+          "when": "false",
+          "group": "inline"
+        },
+        {
+          "command": "together-code.connectToSharedServer",
+          "when": "false",
+          "group": "inline"
+        },
+        {
+          "command": "together-code.disconnectFromSharedServer",
+          "when": "false",
+          "group": "inline"
+        }
+      ],
+      "statusBar/remoteIndicator": [
+        {
+          "command": "together-code.host",
+          "group": "virtualfs_00_together-code_hajimi",
+          "when": "!together-code:inSession"
+        },
+        {
+          "command": "together-code.join",
+          "group": "virtualfs_00_together-code_hajimi",
+          "when": "!together-code:inSession"
+        },
+        {
+          "command": "together-code.joinNewWindow",
+          "group": "virtualfs_00_together-code_hajimi",
+          "when": "!together-code:inSession"
+        },
+        {
+          "command": "together-code.stop",
+          "group": "virtualfs_00_together-code_hajimi",
+          "when": "together-code:isHost"
+        },
+        {
+          "command": "together-code.leave",
+          "group": "virtualfs_00_together-code_hajimi",
+          "when": "together-code:isGuest"
+        },
+        {
+          "command": "together-code.copyInviteLink",
+          "group": "virtualfs_00_together-code_hajimi",
+          "when": "together-code:inSession"
+        }
+      ],
+      "scm/resourceGroup/context": [
+        {
+          "command": "together-code.scm.cleanAll",
+          "when": "scmProvider == together-code-scm && scmResourceGroup =~ /\\(clean\\)/",
+          "group": "inline"
+        },
+        {
+          "command": "together-code.scm.cleanAll",
+          "when": "scmProvider == together-code-scm && scmResourceGroup =~ /\\(clean\\)/",
+          "group": "1_modification"
+        }
+      ],
+      "scm/resourceState/context": [
+        {
+          "command": "together-code.scm.openFile",
+          "when": "scmProvider == together-code-scm && scmResourceGroup =~ /\\(openFile\\)/",
+          "group": "navigation"
+        },
+        {
+          "command": "together-code.scm.openChange",
+          "when": "scmProvider == together-code-scm && scmResourceGroup =~ /\\(openChanges\\)/",
+          "group": "navigation"
+        },
+        {
+          "command": "together-code.scm.clean",
+          "when": "scmProvider == together-code-scm && scmResourceGroup =~ /\\(clean\\)/",
+          "group": "1_modification"
+        },
+        {
+          "command": "together-code.scm.openFile",
+          "when": "scmProvider == together-code-scm && scmResourceGroup =~ /\\(openFile\\)/",
+          "group": "inline@0"
+        },
+        {
+          "command": "together-code.scm.clean",
+          "when": "scmProvider == together-code-scm && scmResourceGroup =~ /\\(clean\\)/",
+          "group": "inline@1"
+        }
+      ],
+      "scm/change/title": [
+        {
+          "command": "together-code.scm.revertChange",
+          "when": "originalResourceScheme == together-code-scm"
+        }
+      ],
+      "commandPalette": [
+        {
+          "command": "together-code.host",
+          "when": "!together-code:inSession"
+        },
+        {
+          "command": "together-code.join",
+          "when": "!together-code:inSession"
+        },
+        {
+          "command": "together-code.joinNewWindow",
+          "when": "!together-code:inSession"
+        },
+        {
+          "command": "together-code.stop",
+          "when": "together-code:isHost"
+        },
+        {
+          "command": "together-code.leave",
+          "when": "together-code:isGuest"
+        },
+        {
+          "command": "together-code.jumpToParticipant",
+          "when": "together-code:inSession"
+        },
+        {
+          "command": "together-code.copyInviteLink",
+          "when": "together-code:inSession"
+        },
+        {
+          "command": "together-code.createSharedTerminal",
+          "when": "false"
+        },
+        {
+          "command": "together-code.focusSharedTerminal",
+          "when": "false"
+        },
+        {
+          "command": "together-code.closeSharedTerminal",
+          "when": "false"
+        },
+        {
+          "command": "together-code.shareServer",
+          "when": "false"
+        },
+        {
+          "command": "together-code.stopSharingServer",
+          "when": "false"
+        },
+        {
+          "command": "together-code.connectToSharedServer",
+          "when": "false"
+        },
+        {
+          "command": "together-code.disconnectFromSharedServer",
+          "when": "false"
+        },
+        {
+          "command": "together-code.copySharedServerLocalURL",
+          "when": "false"
+        },
+        {
+          "command": "together-code.executeHostCommand",
+          "when": "false"
+        },
+        {
+          "command": "together-code.scm.openFile",
+          "when": "false"
+        },
+        {
+          "command": "together-code.scm.openChange",
+          "when": "false"
+        },
+        {
+          "command": "together-code.scm.clean",
+          "when": "false"
+        },
+        {
+          "command": "together-code.scm.cleanAll",
+          "when": "false"
+        },
+        {
+          "command": "together-code.scm.revertChange",
+          "when": "false"
+        }
+      ]
+    },
+    "viewsWelcome": [
+      {
+        "view": "together-code.participants",
+        "contents": "通过邀请链接，让其他人加入当前会话。\n[复制链接](command:together-code.copyInviteLink)",
+        "when": "together-code:inSession"
+      },
+      {
+        "view": "together-code.terminals",
+        "contents": "共享终端允许所有参与者查看终端输出并输入命令。\n[创建终端](command:together-code.createSharedTerminal)",
+        "when": "false"
+      },
+      {
+        "view": "together-code.tunnels",
+        "contents": "将本地服务共享给所有参与者。\n[共享服务](command:together-code.shareServer)",
+        "when": "false"
+      }
+    ],
+    "configuration": {
+      "title": "协同编码",
+      "properties": {
+        "together-code.servers": {
+          "type": "array",
+          "default": [],
+          "description": "自定义服务器列表",
+          "items": {
+            "type": "string"
+          }
+        },
+        "together-code.userName": {
+          "type": "string",
+          "default": "",
+          "description": "向其他参与者显示的用户名。如果为空，将从可用账号中自动识别，或提示你输入名称。"
+        },
+        "together-code.trystero": {
+          "type": "object",
+          "default": {},
+          "description": "trystero.joinRoom 的第一个参数，详见 https://github.com/dmotz/trystero。"
+        },
+        "together-code.terminal.dimensionsSource": {
+          "type": "string",
+          "enum": [
+            "host",
+            "creator",
+            "minimum",
+            "maximum"
+          ],
+          "default": "minimum",
+          "description": "决定共享终端尺寸的计算方式。"
+        }
+      }
+    },
+    "terminal": {
+      "profiles": [
+        {
+          "id": "together-code.sharedTerminal",
+          "title": "共享终端",
+          "icon": "live-share"
+        }
+      ]
+    },
+    "colors": [
+      {
+        "id": "togethercode.participant.loading",
+        "description": "参与者加载中颜色",
+        "defaults": {
+          "dark": "#808080",
+          "light": "#808080"
+        }
+      },
+      {
+        "id": "togethercode.participant.1",
+        "description": "参与者 1 颜色",
+        "defaults": {
+          "dark": "#ffb900",
+          "light": "#ffb900"
+        }
+      },
+      {
+        "id": "togethercode.participant.2",
+        "description": "参与者 2 颜色",
+        "defaults": {
+          "dark": "#107c10",
+          "light": "#107c10"
+        }
+      },
+      {
+        "id": "togethercode.participant.3",
+        "description": "参与者 3 颜色",
+        "defaults": {
+          "dark": "#b4009e",
+          "light": "#b4009e"
+        }
+      },
+      {
+        "id": "togethercode.participant.4",
+        "description": "参与者 4 颜色",
+        "defaults": {
+          "dark": "#ff8c00",
+          "light": "#ff8c00"
+        }
+      },
+      {
+        "id": "togethercode.participant.5",
+        "description": "参与者 5 颜色",
+        "defaults": {
+          "dark": "#e3008c",
+          "light": "#e3008c"
+        }
+      },
+      {
+        "id": "togethercode.participant.6",
+        "description": "参与者 6 颜色",
+        "defaults": {
+          "dark": "#5c2d91",
+          "light": "#5c2d91"
+        }
+      },
+      {
+        "id": "togethercode.participant.7",
+        "description": "参与者 7 颜色",
+        "defaults": {
+          "dark": "#fff100",
+          "light": "#fff100"
+        }
+      },
+      {
+        "id": "togethercode.participant.8",
+        "description": "参与者 8 颜色",
+        "defaults": {
+          "dark": "#b4a0ff",
+          "light": "#b4a0ff"
+        }
+      }
+    ]
+  },
+  "scripts": {
+    "build": "tsdown --env.NODE_ENV production --minify --clean",
+    "dev": "tsdown --watch --env.NODE_ENV development",
+    "typecheck": "tsc --noEmit",
+    "update-version": "node scripts/update-version.mjs",
+    "vscode:prepublish": "pnpm run update-version && pnpm run build",
+    "browser": "vscode-test-web --quality stable --browser none --extensionDevelopmentPath=. ./test-workspace",
+    "wsserver": "tsx --watch ./src/sync/ws/cli.ts",
+    "lint": "eslint . --cache",
+    "release": "bumpp package.json src/sync/ws/package.json"
+  },
+  "devDependencies": {
+    "@antfu/eslint-config": "^7.0.1",
+    "@types/node": "^20.19.30",
+    "@types/picomatch": "^4.0.3",
+    "@types/vscode": "^1.99.0",
+    "@types/ws": "^8.18.1",
+    "@vscode-elements/elements": "^2.4.0",
+    "@vscode/test-web": "^0.0.78",
+    "@vscode/windows-process-tree": "^0.6.3",
+    "@y/protocols": "1.0.6-0",
+    "birpc": "^4.0.0",
+    "bumpp": "^10.4.0",
+    "eslint": "^9.39.2",
+    "eslint-plugin-format": "^1.3.1",
+    "get-port": "^7.1.0",
+    "lib0": "^0.2.117",
+    "msgpackr": "^1.11.9",
+    "nanoid": "^5.1.6",
+    "node-pty": "^1.2.0-beta.6",
+    "pathe": "^2.0.3",
+    "picomatch": "^4.0.4",
+    "reactive-vscode": "^1.0.1",
+    "trystero": "^0.22.0",
+    "tsdown": "^0.19.0",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3",
+    "vscode-languageclient": "^10.0.0-next.19",
+    "vscode-languageserver": "^10.0.0-next.16",
+    "vue": "^3.5.26",
+    "ws": "^8.19.0",
+    "y-array": "^10.1.4",
+    "y-protocols": "^1.0.7",
+    "yjs": "^13.6.29"
+  }
+}

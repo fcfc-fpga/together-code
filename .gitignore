@@ -1,0 +1,14 @@
+dist
+node_modules
+.vscode-test-web
+.vscode-test
+test-workspace
+.eslintcache
+temp
+.claude
+.cursor
+.idea
+.history
+.DS_Store
+*.log
+*.code-workspace
