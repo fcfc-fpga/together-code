@@ -5,6 +5,7 @@ node_modules
 test-workspace
 .eslintcache
 temp
+release/
 .claude
 .cursor
 .idea

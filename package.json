@@ -2,7 +2,7 @@
   "publisher": "hajimi",
   "name": "together-code",
   "displayName": "协同编码",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "private": true,
   "packageManager": "pnpm@10.28.0",
   "description": "支持多人协同编码的远程插件",

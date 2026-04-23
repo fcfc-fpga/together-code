@@ -245,6 +245,18 @@ textarea {
   display: flex;
   flex-direction: column;
   gap: 8px;
+  max-height: min(30vh, 196px);
+  overflow-y: auto;
+  padding-right: 2px;
+}
+
+.tc-participant-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.tc-participant-list::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: rgba(127, 127, 127, 0.28);
 }
 
 .tc-participant-row {
@@ -665,6 +677,11 @@ body.vscode-light .tc-participant-row:hover:not(:disabled) {
 body.vscode-light .tc-chat-feed {
   background: rgba(17, 24, 32, 0.035);
   border-color: transparent;
+}
+
+body.vscode-light .tc-message-bubble-other {
+  background: rgba(255, 255, 255, 0.86);
+  border-color: rgba(17, 24, 32, 0.1);
 }
 
 body.vscode-light .tc-textarea {

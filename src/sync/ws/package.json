@@ -1,7 +1,7 @@
 {
   "name": "together-code-ws-server",
   "type": "module",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "WebSocket server for Together Code",
   "author": {
     "name": "hajimi",
